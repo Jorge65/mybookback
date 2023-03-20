@@ -1,2 +1,2 @@
-GET http://localhost:3001/api/persons
+GET https://phonebook-backend-zk22.onrender.com/api/persons
 Content-Type: application/json
