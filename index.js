@@ -27,9 +27,10 @@ let persons = [
 ]
 
 app.use(express.json())
+app.use(express.static('build'))
+
 const cors = require('cors')
 app.use(cors())
-
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
