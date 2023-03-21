@@ -2,6 +2,8 @@ const express = require('express')
 const app = express()
 var morgan = require('morgan')
 
+console.log('...start...');
+
 let persons = [
     {
     "name": "Arto Hellaa",
@@ -25,11 +27,11 @@ let persons = [
     },
 
 ]
-app.use(express.static('build'))
-app.use(express.json())
 
+app.use(express.json())
 const cors = require('cors')
 app.use(cors())
+
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
@@ -50,15 +52,6 @@ app.get('/info', (request, response) => {
 app.get('/api/persons', (request, response) => {
     response.json(persons)
 })
-
-morgan.token('newperson', function(req, res) {
-  var name = req.body.name
-  var number = req.body.number
-  newperson = JSON.stringify( {"name": name, "number": number})
-  return newperson 
-  });
-
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms :newperson'))
 
 app.get('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
@@ -84,11 +77,18 @@ const generateId = () => {
   return id
 }
 
+morgan.token('newperson', function(req, res) {
+  var name = req.body.name
+  var number = req.body.number
+  newperson = JSON.stringify( {"name": name, "number": number})
+  return newperson 
+  });
+
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :newperson'))
 
 app.post('/api/persons', (request, response) => {
   const body = request.body
-  console.log('request.body',body);
-  
+
   if (!body.name) {
     return response.status(400).json({ 
       error: 'person information missing' 
@@ -122,6 +122,38 @@ app.post('/api/persons', (request, response) => {
   response.json(person)
 })
 
+app.put('/api/persons', (request, response) => {
+  const body = request.body
+
+//  console.log('...put...start', body.name);
+
+  if (!body.name) {
+    return response.status(400).json({ 
+      error: 'person information missing' 
+    })
+  }
+
+  if (!body.number) {
+    return response.status(400).json({ 
+      error: 'number information missing' 
+    })
+  }
+
+  const person = {
+    name: body.name,
+    number: body.number || false,
+    id: generateId()
+  }
+
+//  console.log('...persons...before',persons);
+  persons = persons.filter(p => p.name !== body.name)
+//  console.log('...persons...between',persons);
+  persons = persons.concat(person)
+//  console.log('...persons...after',persons);
+  
+  response.json(person)
+})
+
 app.use(unknownEndpoint)
 
 const PORT = process.env.PORT || 3001
@@ -129,3 +161,4 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
 
+console.log('..end...');

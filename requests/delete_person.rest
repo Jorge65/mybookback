@@ -1,2 +1,2 @@
-DELETE https://phonebook-backend-zk22.onrender.com/api/persons/762056
+DELETE https://phonebook-backend-zk22.onrender.com/api/persons/293830
 Content-Type: application/json
