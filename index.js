@@ -51,6 +51,15 @@ app.get('/api/persons', (request, response) => {
     response.json(persons)
 })
 
+morgan.token('newperson', function(req, res) {
+  var name = req.body.name
+  var number = req.body.number
+  newperson = JSON.stringify( {"name": name, "number": number})
+  return newperson 
+  });
+
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :newperson'))
+
 app.get('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
     const person = persons.find(p => {
@@ -75,18 +84,11 @@ const generateId = () => {
   return id
 }
 
-morgan.token('newperson', function(req, res) {
-  var name = req.body.name
-  var number = req.body.number
-  newperson = JSON.stringify( {"name": name, "number": number})
-  return newperson 
-  });
-
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms :newperson'))
 
 app.post('/api/persons', (request, response) => {
   const body = request.body
-
+  console.log('request.body',body);
+  
   if (!body.name) {
     return response.status(400).json({ 
       error: 'person information missing' 
